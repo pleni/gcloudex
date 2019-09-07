@@ -329,20 +329,19 @@ defmodule GCloudex.CloudStorage.Impl do
       the end:
 
         put_object "somebucket",
-                   "/home/user/Documents/this_file",
+                   {:file, "/home/user/Documents/this_file"},
+                   "new_folder/some_other_folder/this_file"
+
+        put_object "somebucket",
+                   "file content",
                    "new_folder/some_other_folder/this_file"
 
         => # This will upload the file to the directory in 'bucket_path' and
              will create the directories if they do not exist.
       """
       @spec put_object(bucket :: binary, filepath :: binary, bucket_path :: binary) :: HTTPResponse.t
-      def put_object(bucket, filepath, bucket_path \\ :empty) do
-        body = {:file, filepath}
-
-        case bucket_path do
-          :empty -> request_query :put, bucket, [], body, filepath
-          _      -> request_query :put, bucket, [], body, bucket_path
-        end
+      def put_object(bucket, content, bucket_path) do
+        request_query :put, bucket, [], [content], bucket_path
       end
 
       @doc"""
